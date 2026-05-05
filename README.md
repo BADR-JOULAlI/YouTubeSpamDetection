@@ -1,51 +1,53 @@
-# 📺 YouTube Spam Detection with Multinomial Naive Bayes
+# YouTube Spam Detection
 
-This project applies Natural Language Processing and Machine Learning techniques to classify YouTube comments as spam or not spam using the Multinomial Naive Bayes algorithm.
+Projet de classification de commentaires YouTube (`ham` vs `spam`) avec NLP + Machine Learning.
 
----
+## Contenu du projet
 
-## 📂 Dataset
+- `YouTubeSpamDetection.ipynb`: notebook d'exploration initial.
+- `spam_detector.py`: version scriptable et reproductible pour entrainer/evaluer/sauvegarder le modele.
+- `youtube-dataset/*.csv`: donnees d'entrainement.
 
-The dataset consists of 5 merged files (`Youtube01.csv` to `Youtube05.csv`) containing real YouTube comments with spam labels.
+## Ameliorations apportees
 
-Features include:
-- `COMMENT_ID`, `AUTHOR`, `DATE`, `CONTENT`, `CLASS`
+- Pipeline unique `TF-IDF (1-2 grams) + ComplementNB`.
+- Split stratifie et reproductible.
+- Rapport de classification clair.
+- Sauvegarde du modele entraine (`joblib`).
+- Mode prediction en ligne de commande.
 
----
+## Installation
 
-## 🚀 Objectives
-
-- Clean and preprocess YouTube comments
-- Convert text data into numerical features using TF-IDF
-- Train and evaluate a **Multinomial Naive Bayes** classifier
-- Measure performance using accuracy, confusion matrix, and classification report
-
----
-
-## 🧠 Technologies Used
-
-- Python
-- Pandas, NumPy
-- Scikit-learn
-- TF-IDF Vectorizer
-- Matplotlib (for visualization)
-- Jupyter Notebook
-
----
-
-## 📈 Results
-
-- Achieved high accuracy on test data
-- Built a full pipeline for text classification
-
----
-
-## 🛠️ How to Run
-
-1. Clone the repository  
-2. Install dependencies (`pip install -r requirements.txt`)  
-3. Open the notebook:  
 ```bash
-jupyter notebook YouTube_Spam_Detection.ipynb
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+## Entrainement
+
+```bash
+python spam_detector.py
+```
+
+Le modele sera sauvegarde dans `artifacts/spam_model.joblib`.
+
+## Prediction rapide
+
+```bash
+python spam_detector.py --predict "This song is amazing!" "Win money now click here"
+```
+
+## Parametres utiles
+
+```bash
+python spam_detector.py --dataset-dir youtube-dataset --test-size 0.2 --random-state 365
+```
+
+## Prochaines pistes
+
+- Ajouter une validation croisee et recherche d'hyperparametres.
+- Ajouter des tests unitaires (`pytest`) pour fiabiliser le pipeline.
+- Ajouter une petite API (FastAPI/Flask) pour servir le modele.
 
  
