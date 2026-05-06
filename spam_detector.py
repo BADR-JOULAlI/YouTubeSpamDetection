@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
-from typing import Iterable
+from typing import Iterable, cast
 
 import joblib
 import pandas as pd
@@ -11,6 +11,9 @@ from sklearn.metrics import ConfusionMatrixDisplay, classification_report
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import ComplementNB
 from sklearn.pipeline import Pipeline
+
+
+BASE_DIR = Path(__file__).resolve().parent
 
 
 def load_dataset(dataset_dir: Path) -> pd.DataFrame:
@@ -63,12 +66,23 @@ def train_and_evaluate(
     model.fit(x_train, y_train)
 
     y_pred = model.predict(x_test)
-    report = classification_report(
-        y_test, y_pred, target_names=["Ham", "Spam"], digits=4
+
+    report = cast(
+        str,
+        classification_report(
+            y_test,
+            y_pred,
+            target_names=["Ham", "Spam"],
+            digits=4,
+            output_dict=False,
+        ),
     )
 
     ConfusionMatrixDisplay.from_predictions(
-        y_test, y_pred, display_labels=["Ham", "Spam"], cmap="Blues"
+        y_test,
+        y_pred,
+        display_labels=["Ham", "Spam"],
+        cmap="Blues",
     )
 
     return model, report
@@ -83,20 +97,26 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--dataset-dir",
         type=Path,
-        default=Path("youtube-dataset"),
+        default=BASE_DIR / "youtube-dataset",
         help="Path to folder containing Youtube*.csv files",
     )
     parser.add_argument(
         "--model-out",
         type=Path,
-        default=Path("artifacts/spam_model.joblib"),
+        default=BASE_DIR / "artifacts" / "spam_model.joblib",
         help="Path to save trained model",
     )
     parser.add_argument(
-        "--test-size", type=float, default=0.2, help="Fraction used for test split"
+        "--test-size",
+        type=float,
+        default=0.2,
+        help="Fraction used for test split",
     )
     parser.add_argument(
-        "--random-state", type=int, default=365, help="Random seed for reproducibility"
+        "--random-state",
+        type=int,
+        default=365,
+        help="Random seed for reproducibility",
     )
     parser.add_argument(
         "--predict",
@@ -111,8 +131,11 @@ def main() -> None:
     args = parse_args()
 
     data = load_dataset(args.dataset_dir)
+
     model, report = train_and_evaluate(
-        data=data, test_size=args.test_size, random_state=args.random_state
+        data=data,
+        test_size=args.test_size,
+        random_state=args.random_state,
     )
 
     args.model_out.parent.mkdir(parents=True, exist_ok=True)
